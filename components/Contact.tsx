@@ -6,11 +6,7 @@ import { Github, Linkedin, Mail, MapPin, Send, CheckCircle2 } from "lucide-react
 import SectionHeading from "./SectionHeading";
 import { profile } from "@/lib/data";
 
-type FormState = {
-  name: string;
-  email: string;
-  message: string;
-};
+type FormState = { name: string; email: string; message: string };
 
 const initialState: FormState = { name: "", email: "", message: "" };
 
@@ -18,9 +14,7 @@ export default function Contact() {
   const [form, setForm] = useState<FormState>(initialState);
   const [sent, setSent] = useState(false);
 
-  function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
@@ -34,23 +28,24 @@ export default function Contact() {
     setTimeout(() => setSent(false), 4000);
   }
 
-  const contactCards = [
+  const links = [
     { icon: Mail, label: "Email", value: profile.email, href: `mailto:${profile.email}` },
-    { icon: Linkedin, label: "LinkedIn", value: "in/boukrioui-nadir", href: profile.linkedin },
     { icon: Github, label: "GitHub", value: "Nadir-23", href: profile.github },
-    { icon: MapPin, label: "Location", value: profile.location, href: undefined },
+    { icon: Linkedin, label: "LinkedIn", value: "in/boukrioui-nadir", href: profile.linkedin },
+    { icon: MapPin, label: "Location", value: profile.location, href: undefined as string | undefined },
   ];
 
   return (
-    <section id="contact" className="relative border-t border-border/60 bg-void py-28">
-      <div className="mx-auto max-w-6xl px-6">
+    <section id="contact" className="relative border-t border-border/60 bg-void py-24 sm:py-28">
+      <div className="mx-auto max-w-6xl px-5 sm:px-6">
         <SectionHeading
-          eyebrow="08 · Contact"
-          title="Let's build something intelligent"
-          description="Open to internships, collaborations, and interesting problems in AI, data, and software engineering."
+          eyebrow="06 · Contact"
+          title="Let's ship something intelligent"
+          description="Open to internships, research collaborations, and roles where AI has to leave the notebook. Tell me what you're building."
         />
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
+          {/* Links + closing CTA */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -58,54 +53,75 @@ export default function Contact() {
             transition={{ duration: 0.6 }}
             className="space-y-3 lg:col-span-2"
           >
-            {contactCards.map((card) => {
-              const Icon = card.icon;
+            {links.map((link) => {
+              const Icon = link.icon;
               const content = (
                 <div className="gradient-border flex items-center gap-4 rounded-xl bg-panel/50 p-5 transition-colors hover:bg-panel/80">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent-violet/20 to-accent-cyan/20">
-                    <Icon className="h-4.5 w-4.5 text-accent-cyan" />
-                  </div>
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent-violet/20 to-accent-cyan/20">
+                    <Icon className="h-4.5 w-4.5 text-accent-cyan" aria-hidden="true" />
+                  </span>
                   <div>
                     <div className="font-mono text-[10px] uppercase tracking-widest text-ink-faint">
-                      {card.label}
+                      {link.label}
                     </div>
-                    <div className="text-sm text-ink-primary">{card.value}</div>
+                    <div className="break-all text-sm text-ink-primary">{link.value}</div>
                   </div>
                 </div>
               );
-              return card.href ? (
+              return link.href ? (
                 <a
-                  key={card.label}
-                  href={card.href}
-                  target={card.href.startsWith("http") ? "_blank" : undefined}
+                  key={link.label}
+                  href={link.href}
+                  target={link.href.startsWith("http") ? "_blank" : undefined}
                   rel="noreferrer"
                   className="focus-ring block"
                 >
                   {content}
                 </a>
               ) : (
-                <div key={card.label}>{content}</div>
+                <div key={link.label}>{content}</div>
               );
             })}
+
+            <div className="gradient-border rounded-2xl bg-gradient-to-br from-accent-violet/15 to-accent-cyan/10 p-6">
+              <p className="font-display text-lg font-semibold leading-snug text-ink-primary">
+                Got a hard problem and a deadline?
+              </p>
+              <p className="mt-2 text-sm text-ink-muted">
+                That&rsquo;s the kind of work I want. Drop a line — I reply within a day.
+              </p>
+              <a
+                href={`mailto:${profile.email}`}
+                className="focus-ring mt-4 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-accent-cyan hover:underline"
+              >
+                <Mail className="h-3.5 w-3.5" />
+                {profile.email}
+              </a>
+            </div>
           </motion.div>
 
+          {/* Form */}
           <motion.form
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.6 }}
             onSubmit={handleSubmit}
-            className="gradient-border space-y-5 rounded-2xl bg-panel/50 p-7 lg:col-span-3"
+            className="gradient-border space-y-5 rounded-2xl bg-panel/50 p-6 sm:p-7 lg:col-span-3"
           >
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               <div>
-                <label htmlFor="name" className="mb-2 block font-mono text-xs uppercase tracking-wider text-ink-muted">
+                <label
+                  htmlFor="name"
+                  className="mb-2 block font-mono text-xs uppercase tracking-wider text-ink-muted"
+                >
                   Name
                 </label>
                 <input
                   id="name"
                   name="name"
                   required
+                  autoComplete="name"
                   value={form.name}
                   onChange={handleChange}
                   placeholder="Your name"
@@ -113,7 +129,10 @@ export default function Contact() {
                 />
               </div>
               <div>
-                <label htmlFor="email" className="mb-2 block font-mono text-xs uppercase tracking-wider text-ink-muted">
+                <label
+                  htmlFor="email"
+                  className="mb-2 block font-mono text-xs uppercase tracking-wider text-ink-muted"
+                >
                   Email
                 </label>
                 <input
@@ -121,6 +140,7 @@ export default function Contact() {
                   type="email"
                   name="email"
                   required
+                  autoComplete="email"
                   value={form.email}
                   onChange={handleChange}
                   placeholder="you@example.com"
@@ -129,17 +149,20 @@ export default function Contact() {
               </div>
             </div>
             <div>
-              <label htmlFor="message" className="mb-2 block font-mono text-xs uppercase tracking-wider text-ink-muted">
+              <label
+                htmlFor="message"
+                className="mb-2 block font-mono text-xs uppercase tracking-wider text-ink-muted"
+              >
                 Message
               </label>
               <textarea
                 id="message"
                 name="message"
                 required
-                rows={5}
+                rows={6}
                 value={form.message}
                 onChange={handleChange}
-                placeholder="Tell me about your project or opportunity..."
+                placeholder="What are you building, and where do you need help?"
                 className="focus-ring w-full resize-none rounded-lg border border-border bg-void/60 px-4 py-2.5 text-sm text-ink-primary placeholder:text-ink-faint"
               />
             </div>
@@ -149,7 +172,7 @@ export default function Contact() {
             >
               {sent ? (
                 <>
-                  <CheckCircle2 className="h-4 w-4" /> Opening mail client...
+                  <CheckCircle2 className="h-4 w-4" /> Opening mail client…
                 </>
               ) : (
                 <>
@@ -157,6 +180,9 @@ export default function Contact() {
                 </>
               )}
             </button>
+            <p className="font-mono text-[11px] text-ink-faint">
+              Opens your default mail app · {profile.email}
+            </p>
           </motion.form>
         </div>
       </div>

@@ -1,89 +1,83 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Brain, Cpu, Database, Shield, Code2, GitBranch, LineChart } from "lucide-react";
+import { Award, BookOpen, Globe, MapPin } from "lucide-react";
 import SectionHeading from "./SectionHeading";
-import StatCounter from "./StatCounter";
-import { aboutInterests, stats } from "@/lib/data";
+import { about } from "@/lib/data";
 
-const iconMap: Record<string, React.ElementType> = {
-  "Artificial Intelligence": Brain,
-  "Machine Learning": LineChart,
-  "Data Science": Database,
-  "Full-Stack Development": Code2,
-  Cybersecurity: Shield,
-  "Software Engineering": Cpu,
-  "Open Source": GitBranch,
-};
+type Fact = { label: string; value: string; detail?: string };
+
+const factIcons = [MapPin, BookOpen, Globe, Award];
 
 export default function About() {
+  const facts: Fact[] = [
+    about.facts.location,
+    about.facts.education,
+    about.facts.languages,
+    about.facts.certifications,
+  ];
+
   return (
-    <section id="about" className="relative border-t border-border/60 bg-surface py-28">
-      <div className="mx-auto max-w-6xl px-6">
+    <section id="about" className="relative border-t border-border/60 bg-surface py-24 sm:py-28">
+      <div className="mx-auto max-w-6xl px-5 sm:px-6">
         <SectionHeading
           eyebrow="01 · About"
-          title="Engineering intelligence, one system at a time"
+          title="Two ideas, one workflow: innovation and productivity"
+          description="I like work that is both new and finished — a model nobody has trained for Darija, shipped as something people can actually use."
         />
 
-        <div className="grid grid-cols-1 gap-14 lg:grid-cols-5">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          {/* Prose */}
           <motion.div
-            initial={{ opacity: 0, x: -24 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.6 }}
-            className="lg:col-span-3"
+            className="space-y-5 lg:col-span-2"
           >
-            <p className="text-lg leading-relaxed text-ink-muted">
-              I am currently pursuing a{" "}
-              <span className="text-ink-primary">
-                State Engineering Degree in AI &amp; Data Sciences
-              </span>{" "}
-              at <span className="text-accent-cyan">ENSIASD</span> — the National School of
-              Artificial Intelligence and Data Sciences.
-            </p>
-            <p className="mt-5 leading-relaxed text-ink-muted">
-              I enjoy solving real-world problems through code and continuously learning new
-              technologies — from training models to shipping the interfaces and infrastructure
-              that put them in front of real users.
-            </p>
-
-            <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {aboutInterests.map((interest, i) => {
-                const Icon = iconMap[interest] ?? Brain;
-                return (
-                  <motion.div
-                    key={interest}
-                    initial={{ opacity: 0, y: 12 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.4, delay: i * 0.05 }}
-                    className="gradient-border flex items-center gap-2.5 rounded-xl bg-panel/50 px-3.5 py-3"
-                  >
-                    <Icon className="h-4 w-4 shrink-0 text-accent-violet" />
-                    <span className="text-sm text-ink-primary">{interest}</span>
-                  </motion.div>
-                );
-              })}
-            </div>
+            {about.paragraphs.map((p) => (
+              <p key={p.slice(0, 32)} className="text-base leading-relaxed text-ink-muted sm:text-lg">
+                {p}
+              </p>
+            ))}
           </motion.div>
 
+          {/* Quick-facts bento */}
           <motion.div
-            initial={{ opacity: 0, x: 24 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.6 }}
-            className="lg:col-span-2"
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1"
           >
-            <div className="gradient-border relative h-full rounded-2xl bg-panel/50 p-8">
-              <div className="font-mono text-xs uppercase tracking-widest text-accent-cyan">
-                Snapshot
-              </div>
-              <div className="mt-6 grid grid-cols-1 divide-y divide-border/70">
-                {stats.map((s) => (
-                  <StatCounter key={s.label} value={s.value} suffix={s.suffix} label={s.label} />
-                ))}
-              </div>
-            </div>
+            {facts.map((fact, i) => {
+              const Icon = factIcons[i];
+              return (
+                <motion.div
+                  key={fact.label}
+                  initial={{ opacity: 0, y: 14 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.45, delay: i * 0.07 }}
+                  className="gradient-border group rounded-2xl bg-panel/50 p-5 transition-transform duration-300 hover:-translate-y-1"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-accent-violet/20 to-accent-cyan/20">
+                      <Icon className="h-4 w-4 text-accent-cyan" aria-hidden="true" />
+                    </span>
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-ink-faint">
+                      {fact.label}
+                    </span>
+                  </div>
+                  <p className="mt-3 text-sm font-medium leading-snug text-ink-primary">
+                    {fact.value}
+                  </p>
+                  {fact.detail && (
+                    <p className="mt-1 font-mono text-[11px] text-ink-muted">{fact.detail}</p>
+                  )}
+                </motion.div>
+              );
+            })}
           </motion.div>
         </div>
       </div>

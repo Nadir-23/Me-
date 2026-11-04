@@ -3,52 +3,119 @@ import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import ScrollToTop from "@/components/ScrollToTop";
+import CursorGlow from "@/components/CursorGlow";
+import { profile } from "@/lib/data";
 
 const display = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-display",
   weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
 const body = Inter({
   subsets: ["latin"],
   variable: "--font-body",
   weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
 });
 
 const mono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
   weight: ["400", "500", "600"],
+  display: "swap",
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://nadirboukrioui.dev";
+
 export const metadata: Metadata = {
-  title: "Boukrioui Nadir — AI & Data Sciences Engineer",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "Nadir Boukrioui — AI Engineer · Full-Stack · Data Science",
+    template: "%s · Nadir Boukrioui",
+  },
   description:
-    "Portfolio of Boukrioui Nadir, an AI & Data Sciences engineering student and full-stack developer from Morocco, building intelligent and scalable solutions.",
+    "Portfolio of Nadir Boukrioui, second-year AI & Data Science engineering student at ENSIASD, Morocco. I build intelligent systems that ship — from Darija TTS models to full-stack platforms.",
   keywords: [
-    "Boukrioui Nadir",
+    "Nadir Boukrioui",
     "AI Engineer",
-    "Data Sciences",
+    "Data Science",
     "Full-Stack Developer",
     "Morocco",
     "ENSIASD",
     "Machine Learning",
+    "Portfolio",
   ],
-  authors: [{ name: "Boukrioui Nadir" }],
+  authors: [{ name: "Nadir Boukrioui", url: siteUrl }],
+  creator: "Nadir Boukrioui",
   openGraph: {
-    title: "Boukrioui Nadir — AI & Data Sciences Engineer",
-    description:
-      "AI & Data Sciences engineering student and full-stack developer building intelligent, scalable solutions.",
     type: "website",
+    locale: "en_US",
+    url: siteUrl,
+    siteName: "Nadir Boukrioui",
+    title: "Nadir Boukrioui — AI Engineer · Full-Stack · Data Science",
+    description:
+      "AI engineer in the making. I build intelligent systems that ship — Darija TTS, multi-agent research tools, and full-stack platforms.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Nadir Boukrioui — AI Engineer Portfolio",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Nadir Boukrioui — AI Engineer",
+    description:
+      "AI engineer in the making. I build intelligent systems that ship.",
+    images: ["/og-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: profile.name,
+  jobTitle: "AI & Data Science Engineering Student",
+  email: `mailto:${profile.email}`,
+  url: siteUrl,
+  sameAs: [profile.github, profile.linkedin],
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Tangier-Tetouan",
+    addressCountry: "MA",
+  },
+  alumniOf: {
+    "@type": "CollegeOrUniversity",
+    name: "ENSIASD — National School of Artificial Intelligence and Data Sciences",
+  },
+  knowsAbout: [
+    "Artificial Intelligence",
+    "Machine Learning",
+    "Natural Language Processing",
+    "Full-Stack Development",
+    "Data Science",
+  ],
+};
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Nadir Boukrioui",
+  url: siteUrl,
+  description:
+    "Portfolio of Nadir Boukrioui — AI engineer building intelligent systems that ship.",
+  author: { "@type": "Person", name: profile.name },
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
@@ -57,9 +124,18 @@ export default function RootLayout({
     >
       <body>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          <CursorGlow />
           {children}
           <ScrollToTop />
         </ThemeProvider>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
       </body>
     </html>
   );

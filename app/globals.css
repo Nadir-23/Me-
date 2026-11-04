@@ -8,6 +8,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
 }
 
 html.light {
@@ -20,7 +21,73 @@ body {
 }
 
 html.light body {
-  @apply bg-[#f6f6fb] text-[#12101f];
+  @apply bg-[#f7f7fb] text-[#14122a];
+}
+
+/* Light-mode token overrides (WCAG AA on light surfaces) */
+html.light {
+  --color-surface: #ffffff;
+  --color-panel: #ffffff;
+  --color-border: #e4e4f0;
+  --color-ink-primary: #14122a;
+  --color-ink-muted: #4a4a6a;
+  --color-ink-faint: #6b6b8a;
+}
+
+html.light .bg-void {
+  background-color: #f7f7fb !important;
+}
+html.light .bg-surface {
+  background-color: #ffffff !important;
+}
+html.light .bg-panel\/50,
+html.light .bg-panel\/60,
+html.light .bg-panel\/80,
+html.light .bg-panel\/40 {
+  background-color: rgba(255, 255, 255, 0.85) !important;
+}
+html.light .border-border,
+html.light .border-border\/60,
+html.light .border-border\/70 {
+  border-color: #e4e4f0 !important;
+}
+html.light .text-ink-muted {
+  color: #4a4a6a !important;
+}
+html.light .text-ink-faint {
+  color: #6b6b8a !important;
+}
+html.light .text-ink-primary {
+  color: #14122a !important;
+}
+html.light .bg-void\/40,
+html.light .bg-void\/60 {
+  background-color: rgba(247, 247, 251, 0.9) !important;
+}
+html.light .bg-void\/80,
+html.light .bg-void\/95,
+html.light header.bg-void\/80,
+html.light nav + ul {
+  background-color: rgba(247, 247, 251, 0.88) !important;
+}
+html.light .text-white {
+  color: #ffffff !important;
+}
+html.light .shadow-glow {
+  box-shadow: 0 0 32px rgba(124, 92, 255, 0.28);
+}
+html.light ::selection {
+  background: rgba(124, 92, 255, 0.25);
+  color: #14122a;
+}
+html.light .timeline-line {
+  background: linear-gradient(
+    180deg,
+    rgba(124, 92, 255, 0.08),
+    rgba(124, 92, 255, 0.45) 15%,
+    rgba(53, 224, 208, 0.45) 85%,
+    rgba(53, 224, 208, 0.08)
+  );
 }
 
 ::selection {
@@ -57,7 +124,7 @@ html.light body {
 }
 
 .section-heading {
-  @apply font-display text-3xl sm:text-4xl font-semibold text-ink-primary tracking-tight;
+  @apply font-display text-3xl font-semibold text-ink-primary tracking-tight sm:text-4xl;
 }
 
 .glass-card {
@@ -87,6 +154,15 @@ html.light body {
   pointer-events: none;
 }
 
+html.light .gradient-border::before {
+  background: linear-gradient(
+    135deg,
+    rgba(124, 92, 255, 0.4),
+    rgba(53, 224, 208, 0.3) 50%,
+    rgba(74, 125, 255, 0.15) 100%
+  );
+}
+
 .text-gradient {
   background: linear-gradient(120deg, #7c5cff 0%, #4a7dff 45%, #35e0d0 100%);
   -webkit-background-clip: text;
@@ -96,6 +172,10 @@ html.light body {
 
 .focus-ring {
   @apply outline-none focus-visible:ring-2 focus-visible:ring-accent-cyan/70 focus-visible:ring-offset-2 focus-visible:ring-offset-void;
+}
+
+html.light .focus-ring {
+  @apply focus-visible:ring-offset-[#f7f7fb];
 }
 
 /* Timeline connector */

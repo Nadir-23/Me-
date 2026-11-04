@@ -2,36 +2,74 @@
 
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUpRight, Github } from "lucide-react";
+import { ArrowUpRight, Github, PlayCircle } from "lucide-react";
 import SectionHeading from "./SectionHeading";
-import { projectCategories, projects } from "@/lib/data";
+import { projects, projectCategories } from "@/lib/projects";
+
+type Category = (typeof projectCategories)[number];
+
+/** Abstract, lightweight hover preview — unique gradient per category. */
+function ProjectPreview({ category, title }: { category: string; title: string }) {
+  const hue = category === "AI" ? "168" : category === "Research" ? "258" : "212";
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-focus-within:opacity-100"
+    >
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `radial-gradient(ellipse 80% 60% at 80% 0%, hsla(${hue},80%,60%,0.18), transparent 60%),
+                       radial-gradient(ellipse 60% 50% at 10% 100%, hsla(${hue},70%,55%,0.12), transparent 55%)`,
+        }}
+      />
+      <div
+        className="absolute -right-6 -top-8 font-display text-[7rem] font-bold leading-none opacity-[0.045] sm:text-[9rem]"
+        style={{ color: `hsl(${hue}, 80%, 70%)` }}
+      >
+        {title.charAt(0)}
+      </div>
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent-cyan/50 to-transparent" />
+    </div>
+  );
+}
 
 export default function Projects() {
-  const [active, setActive] = useState<(typeof projectCategories)[number]>("All");
+  const [active, setActive] = useState<Category>("All");
 
   const filtered = useMemo(
-    () => (active === "All" ? projects : projects.filter((p) => p.category === active)),
+    () =>
+      active === "All"
+        ? projects
+        : projects.filter((p: (typeof projects)[number]) => p.category === active),
     [active]
   );
 
   return (
-    <section id="projects" className="relative border-t border-border/60 bg-void py-28">
-      <div className="mx-auto max-w-6xl px-6">
+    <section id="projects" className="relative border-t border-border/60 bg-void py-24 sm:py-28">
+      <div className="mx-auto max-w-6xl px-5 sm:px-6">
         <SectionHeading
-          eyebrow="04 · Projects"
-          title="Selected work"
-          description="From heritage-preservation platforms to club management systems — built end to end, from schema design to deployment."
+          eyebrow="02 · Projects"
+          title="Case studies, not screenshots"
+          description="Each card states the problem, what I built, and the number that proves it works. Filter by what you care about."
         />
 
-        <div className="mb-10 flex flex-wrap gap-2">
-          {projectCategories.map((cat) => (
+        {/* Filters */}
+        <div
+          role="tablist"
+          aria-label="Filter projects"
+          className="mb-10 flex flex-wrap gap-2"
+        >
+          {projectCategories.map((cat: Category) => (
             <button
               key={cat}
+              role="tab"
+              aria-selected={active === cat}
               onClick={() => setActive(cat)}
               className={`focus-ring rounded-full border px-4 py-1.5 font-mono text-xs uppercase tracking-wider transition-colors ${
                 active === cat
-                  ? "border-accent-violet bg-accent-violet/15 text-ink-primary"
-                  : "border-border text-ink-muted hover:border-accent-cyan/50 hover:text-accent-cyan"
+                  ? "border-accent-cyan bg-accent-cyan/10 text-accent-cyan"
+                  : "border-border text-ink-muted hover:border-accent-violet/50 hover:text-ink-primary"
               }`}
             >
               {cat}
@@ -39,9 +77,9 @@ export default function Projects() {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <AnimatePresence mode="popLayout">
-            {filtered.map((project, i) => (
+            {filtered.map((project: (typeof projects)[number], i: number) => (
               <motion.article
                 key={project.slug}
                 layout
@@ -49,57 +87,133 @@ export default function Projects() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -12 }}
                 transition={{ duration: 0.4, delay: i * 0.05 }}
-                className={`gradient-border group relative flex flex-col rounded-2xl bg-panel/50 p-7 ${
-                  project.featured ? "md:col-span-2" : ""
+                className={`gradient-border group relative flex flex-col overflow-hidden rounded-2xl bg-panel/50 p-6 transition-transform duration-300 hover:-translate-y-1.5 sm:p-7 ${
+                  project.featured ? "lg:col-span-2" : ""
                 }`}
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <span className="font-mono text-[10px] uppercase tracking-widest text-accent-cyan">
-                      {project.category}
-                    </span>
-                    <h3 className="mt-2 font-display text-xl font-semibold text-ink-primary sm:text-2xl">
-                      {project.title}
-                    </h3>
-                  </div>
-                  <a
-                    href={project.github}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={`Open ${project.title} on GitHub`}
-                    className="focus-ring flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border text-ink-muted transition-colors group-hover:border-accent-cyan/50 group-hover:text-accent-cyan"
-                  >
-                    <Github className="h-4 w-4" />
-                  </a>
-                </div>
+                <ProjectPreview category={project.category} title={project.title} />
 
-                <p className="mt-4 flex-1 leading-relaxed text-ink-muted">
-                  {project.description}
-                </p>
-
-                <ul className="mt-5 space-y-1.5">
-                  {project.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-sm text-ink-muted">
-                      <ArrowUpRight className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent-violet" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="mt-6 flex flex-wrap gap-2">
-                  {project.technologies.map((tech) => (
-                    <span
-                      key={tech}
-                      className="rounded-full border border-border bg-void/40 px-3 py-1 text-xs text-ink-muted"
+                <div className="relative z-10 flex flex-1 flex-col">
+                  {/* Header */}
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="rounded-full border border-accent-cyan/30 bg-accent-cyan/10 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-widest text-accent-cyan">
+                          {project.category}
+                        </span>
+                        <span className="font-mono text-[10px] uppercase tracking-widest text-ink-faint">
+                          {project.year} · {project.role}
+                        </span>
+                      </div>
+                      <h3 className="mt-3 font-display text-xl font-semibold text-ink-primary sm:text-2xl">
+                        {project.title}
+                      </h3>
+                      <p className="mt-1 text-sm text-ink-muted">{project.tagline}</p>
+                    </div>
+                    <a
+                      href={project.github}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={`Open ${project.title} on GitHub`}
+                      className="focus-ring flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border text-ink-muted transition-colors group-hover:border-accent-cyan/50 group-hover:text-accent-cyan"
                     >
-                      {tech}
+                      <Github className="h-4 w-4" />
+                    </a>
+                  </div>
+
+                  {/* Problem / Solution */}
+                  <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="rounded-xl border border-border/70 bg-void/40 p-4">
+                      <span className="font-mono text-[10px] uppercase tracking-widest text-ink-faint">
+                        Problem
+                      </span>
+                      <p className="mt-2 text-sm leading-relaxed text-ink-muted">
+                        {project.problem}
+                      </p>
+                    </div>
+                    <div className="rounded-xl border border-border/70 bg-void/40 p-4">
+                      <span className="font-mono text-[10px] uppercase tracking-widest text-accent-violet">
+                        Solution
+                      </span>
+                      <p className="mt-2 text-sm leading-relaxed text-ink-muted">
+                        {project.solution}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Highlights */}
+                  <ul className="mt-4 space-y-1.5">
+                    {project.highlights.map((h: string) => (
+                      <li key={h} className="flex items-start gap-2 text-sm text-ink-muted">
+                        <ArrowUpRight
+                          className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent-violet"
+                          aria-hidden="true"
+                        />
+                        {h}
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* Metric */}
+                  <div className="mt-5 flex items-baseline gap-3 rounded-xl border border-accent-violet/25 bg-accent-violet/5 px-4 py-3">
+                    <span className="font-display text-2xl font-semibold text-gradient sm:text-3xl">
+                      {project.metric.value}
                     </span>
-                  ))}
+                    <span className="font-mono text-[11px] uppercase tracking-wider text-ink-muted">
+                      {project.metric.label}
+                    </span>
+                  </div>
+
+                  {/* Stack */}
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {project.stack.map((tech: string) => (
+                      <span
+                        key={tech}
+                        className="rounded-full border border-border bg-void/40 px-3 py-1 font-mono text-[11px] text-ink-muted"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Links */}
+                  <div className="mt-5 flex flex-wrap items-center gap-4 border-t border-border/60 pt-4">
+                    {project.live ? (
+                      <a
+                        href={project.live}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="focus-ring inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-accent-cyan transition-colors hover:underline"
+                      >
+                        <PlayCircle className="h-3.5 w-3.5" />
+                        Live demo
+                      </a>
+                    ) : (
+                      <span className="font-mono text-xs uppercase tracking-wider text-ink-faint">
+                        Demo on request
+                      </span>
+                    )}
+                    <a
+                      href={project.github}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="focus-ring inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-ink-muted transition-colors hover:text-ink-primary"
+                    >
+                      <Github className="h-3.5 w-3.5" />
+                      Source
+                    </a>
+                  </div>
                 </div>
               </motion.article>
             ))}
           </AnimatePresence>
         </div>
+
+        {filtered.length === 0 && (
+          <p className="rounded-2xl border border-border bg-panel/40 p-8 text-center font-mono text-sm text-ink-muted">
+            No projects in this category yet.
+          </p>
+        )}
       </div>
     </section>
   );

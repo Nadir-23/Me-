@@ -4,13 +4,13 @@ import { profile } from "@/lib/data";
 export default function Footer() {
   return (
     <footer className="border-t border-border/60 bg-surface py-10">
-      <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-6 sm:flex-row sm:justify-between">
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-5 sm:flex-row sm:justify-between sm:px-6">
         <div className="text-center sm:text-left">
           <span className="font-display text-lg font-semibold">
             <span className="text-gradient">N.</span> Boukrioui
           </span>
           <p className="mt-1 font-mono text-[11px] uppercase tracking-widest text-ink-faint">
-            AI &amp; Data Sciences Engineer
+            Innovation · Productivity
           </p>
         </div>
 
@@ -43,7 +43,7 @@ export default function Footer() {
         </div>
 
         <p className="font-mono text-[11px] text-ink-faint">
-          © {new Date().getFullYear()} Boukrioui Nadir. All rights reserved.
+          © {new Date().getFullYear()} Nadir Boukrioui. All rights reserved.
         </p>
       </div>
     </footer>
