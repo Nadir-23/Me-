@@ -1,7 +1,10 @@
+"use client";
+
 import { Github, Linkedin, Mail } from "lucide-react";
-import { profile } from "@/lib/data";
+import { useI18n } from "@/lib/i18n";
 
 export default function Footer() {
+  const { profile, ui } = useI18n();
   return (
     <footer className="border-t border-border/60 bg-surface py-10">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-5 sm:flex-row sm:justify-between sm:px-6">
@@ -10,7 +13,7 @@ export default function Footer() {
             <span className="text-gradient">N.</span> Boukrioui
           </span>
           <p className="mt-1 font-mono text-[11px] uppercase tracking-widest text-ink-faint">
-            Innovation · Productivity
+            {ui.footer.tagline}
           </p>
         </div>
 
@@ -43,7 +46,7 @@ export default function Footer() {
         </div>
 
         <p className="font-mono text-[11px] text-ink-faint">
-          © {new Date().getFullYear()} Nadir Boukrioui. All rights reserved.
+          {ui.footer.rights(new Date().getFullYear())}
         </p>
       </div>
     </footer>

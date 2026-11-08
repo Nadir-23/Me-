@@ -4,9 +4,9 @@ import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight, Github, PlayCircle } from "lucide-react";
 import SectionHeading from "./SectionHeading";
-import { projects, projectCategories } from "@/lib/projects";
+import { useI18n } from "@/lib/i18n";
 
-type Category = (typeof projectCategories)[number];
+type Category = string;
 
 /** Abstract, lightweight hover preview — unique gradient per category. */
 function ProjectPreview({ category, title }: { category: string; title: string }) {
@@ -35,29 +35,32 @@ function ProjectPreview({ category, title }: { category: string; title: string }
 }
 
 export default function Projects() {
+  const { projects, projectCategories, ui } = useI18n();
   const [active, setActive] = useState<Category>("All");
 
   const filtered = useMemo(
     () =>
       active === "All"
         ? projects
-        : projects.filter((p: (typeof projects)[number]) => p.category === active),
-    [active]
+        : projects.filter((p) => p.category === active),
+    [projects, active]
   );
+
+  const categoryLabel = (cat: string) => ui.projects.categoryLabels[cat] ?? cat;
 
   return (
     <section id="projects" className="relative border-t border-border/60 bg-void py-24 sm:py-28">
       <div className="mx-auto max-w-6xl px-5 sm:px-6">
         <SectionHeading
-          eyebrow="02 · Projects"
-          title="Case studies, not screenshots"
-          description="Each card states the problem, what I built, and the number that proves it works. Filter by what you care about."
+          eyebrow={ui.projects.eyebrow}
+          title={ui.projects.title}
+          description={ui.projects.description}
         />
 
         {/* Filters */}
         <div
           role="group"
-          aria-label="Filter projects by category"
+          aria-label={ui.projects.filterLabel}
           className="mb-10 flex flex-wrap gap-2"
         >
           {projectCategories.map((cat: Category) => (
@@ -72,14 +75,16 @@ export default function Projects() {
                   : "border-border text-ink-muted hover:border-accent-violet/50 hover:text-ink-primary"
               }`}
             >
-              {cat}
+              {categoryLabel(cat)}
             </button>
           ))}
         </div>
 
         <p role="status" className="sr-only">
-          {filtered.length} {filtered.length === 1 ? "project" : "projects"} shown in{" "}
-          {active === "All" ? "all categories" : active}
+          {ui.projects.status(
+            filtered.length,
+            active === "All" ? ui.projects.allCategories : categoryLabel(active)
+          )}
         </p>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -104,7 +109,7 @@ export default function Projects() {
                     <div>
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="rounded-full border border-accent-cyan/30 bg-accent-cyan/10 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-widest text-accent-cyan">
-                          {project.category}
+                          {categoryLabel(project.category)}
                         </span>
                         <span className="font-mono text-[10px] uppercase tracking-widest text-ink-faint">
                           {project.year} · {project.role}
@@ -119,7 +124,7 @@ export default function Projects() {
                       href={project.github}
                       target="_blank"
                       rel="noreferrer"
-                      aria-label={`Open ${project.title} on GitHub`}
+                      aria-label={ui.projects.openGithub(project.title)}
                       className="focus-ring flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border text-ink-muted transition-colors group-hover:border-accent-cyan/50 group-hover:text-accent-cyan"
                     >
                       <Github className="h-4 w-4" />
@@ -130,7 +135,7 @@ export default function Projects() {
                   <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="rounded-xl border border-border/70 bg-void/40 p-4">
                       <span className="font-mono text-[10px] uppercase tracking-widest text-ink-faint">
-                        Problem
+                        {ui.projects.problem}
                       </span>
                       <p className="mt-2 text-sm leading-relaxed text-ink-muted">
                         {project.problem}
@@ -138,7 +143,7 @@ export default function Projects() {
                     </div>
                     <div className="rounded-xl border border-border/70 bg-void/40 p-4">
                       <span className="font-mono text-[10px] uppercase tracking-widest text-accent-violet">
-                        Solution
+                        {ui.projects.solution}
                       </span>
                       <p className="mt-2 text-sm leading-relaxed text-ink-muted">
                         {project.solution}
@@ -191,11 +196,11 @@ export default function Projects() {
                         className="focus-ring inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-accent-cyan transition-colors hover:underline"
                       >
                         <PlayCircle className="h-3.5 w-3.5" />
-                        Live demo
+                        {ui.projects.liveDemo}
                       </a>
                     ) : (
                       <span className="font-mono text-xs uppercase tracking-wider text-ink-faint">
-                        Demo on request
+                        {ui.projects.demoOnRequest}
                       </span>
                     )}
                     <a
@@ -205,7 +210,7 @@ export default function Projects() {
                       className="focus-ring inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-ink-muted transition-colors hover:text-ink-primary"
                     >
                       <Github className="h-3.5 w-3.5" />
-                      Source
+                      {ui.projects.source}
                     </a>
                   </div>
                 </div>
@@ -216,7 +221,7 @@ export default function Projects() {
 
         {filtered.length === 0 && (
           <p className="rounded-2xl border border-border bg-panel/40 p-8 text-center font-mono text-sm text-ink-muted">
-            No projects in this category yet.
+            {ui.projects.empty}
           </p>
         )}
       </div>

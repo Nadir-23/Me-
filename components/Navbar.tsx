@@ -1,14 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
-import { navLinks } from "@/lib/data";
-
-const sectionIds = navLinks.map((l) => l.href.replace("#", ""));
+import LangToggle from "./LangToggle";
+import { useI18n } from "@/lib/i18n";
 
 export default function Navbar() {
+  const { ui, navLinks } = useI18n();
+  // hrefs are identical in every language, but keep the list memoised so the
+  // observer effect has a stable dependency.
+  const sectionIds = useMemo(
+    () => navLinks.map((l) => l.href.replace("#", "")),
+    [navLinks]
+  );
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState<string>("");
@@ -37,7 +43,7 @@ export default function Navbar() {
     });
 
     return () => observer.disconnect();
-  }, []);
+  }, [sectionIds]);
 
   return (
     <motion.header
@@ -51,7 +57,7 @@ export default function Navbar() {
       }`}
     >
       <nav
-        aria-label="Primary"
+        aria-label={ui.nav.ariaPrimary}
         className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-6"
       >
         <a href="#top" className="focus-ring font-display text-lg font-semibold tracking-tight">
@@ -89,16 +95,17 @@ export default function Navbar() {
 
         <div className="flex items-center gap-3">
           <ThemeToggle />
+          <LangToggle />
           <a
             href="#contact"
             className="focus-ring hidden rounded-full border border-accent-violet/40 bg-accent-violet/10 px-4 py-1.5 font-mono text-xs uppercase tracking-wider text-ink-primary transition-colors hover:bg-accent-violet/20 sm:block"
           >
-            Let&rsquo;s talk
+            {ui.nav.talk}
           </a>
           <button
             className="focus-ring flex h-9 w-9 items-center justify-center rounded-full border border-border text-ink-muted md:hidden"
             onClick={() => setOpen((v) => !v)}
-            aria-label="Toggle menu"
+            aria-label={ui.nav.toggleMenu}
             aria-expanded={open}
           >
             {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}

@@ -11,7 +11,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import SectionHeading from "./SectionHeading";
-import { certifications, skillGroups } from "@/lib/data";
+import { useI18n } from "@/lib/i18n";
 
 const iconMap: Record<string, LucideIcon> = {
   brain: Brain,
@@ -22,13 +22,14 @@ const iconMap: Record<string, LucideIcon> = {
 };
 
 export default function Skills() {
+  const { skillGroups, certifications, ui } = useI18n();
   return (
     <section id="skills" className="relative border-t border-border/60 bg-surface py-24 sm:py-28">
       <div className="mx-auto max-w-6xl px-5 sm:px-6">
         <SectionHeading
-          eyebrow="03 · Skills"
-          title="The stack I actually reach for"
-          description="No progress bars — just the tools I've used in shipped projects, grouped the way I think about them."
+          eyebrow={ui.skills.eyebrow}
+          title={ui.skills.title}
+          description={ui.skills.description}
         />
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -79,7 +80,7 @@ export default function Skills() {
                 <Award className="h-5 w-5 text-accent-amber" aria-hidden="true" />
               </span>
               <h3 className="font-display text-base font-semibold text-ink-primary sm:text-lg">
-                Certifications
+                {ui.skills.certifications}
               </h3>
             </div>
             <ul className="mt-5 space-y-3">

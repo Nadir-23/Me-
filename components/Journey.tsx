@@ -3,16 +3,17 @@
 import { motion } from "framer-motion";
 import { Briefcase, GraduationCap } from "lucide-react";
 import SectionHeading from "./SectionHeading";
-import { timeline } from "@/lib/data";
+import { useI18n } from "@/lib/i18n";
 
 export default function Journey() {
+  const { timeline, ui } = useI18n();
   return (
     <section id="journey" className="relative border-t border-border/60 bg-void py-24 sm:py-28">
       <div className="mx-auto max-w-6xl px-5 sm:px-6">
         <SectionHeading
-          eyebrow="04 · Journey"
-          title="Experience & education"
-          description="Where I've been building — internships and the academic path that feeds them."
+          eyebrow={ui.journey.eyebrow}
+          title={ui.journey.title}
+          description={ui.journey.description}
         />
 
         <div className="relative ml-1 sm:ml-4">
@@ -56,7 +57,7 @@ export default function Journey() {
                       }`}
                     >
                       <Icon className="h-3 w-3" aria-hidden="true" />
-                      {isWork ? "Experience" : "Education"}
+                      {isWork ? ui.journey.experience : ui.journey.education}
                     </span>
                   </div>
 

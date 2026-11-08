@@ -4,13 +4,15 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Github, Linkedin, Mail, MapPin, Send, CheckCircle2 } from "lucide-react";
 import SectionHeading from "./SectionHeading";
-import { profile } from "@/lib/data";
+import { useI18n } from "@/lib/i18n";
 
 type FormState = { name: string; email: string; message: string };
 
 const initialState: FormState = { name: "", email: "", message: "" };
 
 export default function Contact() {
+  const { profile, ui } = useI18n();
+  const t = ui.contact;
   const [form, setForm] = useState<FormState>(initialState);
   const [sent, setSent] = useState(false);
 
@@ -29,19 +31,19 @@ export default function Contact() {
   }
 
   const links = [
-    { icon: Mail, label: "Email", value: profile.email, href: `mailto:${profile.email}` },
-    { icon: Github, label: "GitHub", value: "Nadir-23", href: profile.github },
-    { icon: Linkedin, label: "LinkedIn", value: "in/boukrioui-nadir", href: profile.linkedin },
-    { icon: MapPin, label: "Location", value: profile.location, href: undefined as string | undefined },
+    { icon: Mail, label: t.email, value: profile.email, href: `mailto:${profile.email}` },
+    { icon: Github, label: t.github, value: "Nadir-23", href: profile.github },
+    { icon: Linkedin, label: t.linkedin, value: "in/boukrioui-nadir", href: profile.linkedin },
+    { icon: MapPin, label: t.location, value: profile.location, href: undefined as string | undefined },
   ];
 
   return (
     <section id="contact" className="relative border-t border-border/60 bg-void py-24 sm:py-28">
       <div className="mx-auto max-w-6xl px-5 sm:px-6">
         <SectionHeading
-          eyebrow="06 · Contact"
-          title="Let's ship something intelligent"
-          description="Open to internships, research collaborations, and roles where AI has to leave the notebook. Tell me what you're building."
+          eyebrow={t.eyebrow}
+          title={t.title}
+          description={t.description}
         />
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
@@ -85,11 +87,9 @@ export default function Contact() {
 
             <div className="gradient-border rounded-2xl bg-gradient-to-br from-accent-violet/15 to-accent-cyan/10 p-6">
               <p className="font-display text-lg font-semibold leading-snug text-ink-primary">
-                Got a hard problem and a deadline?
+                {t.ctaTitle}
               </p>
-              <p className="mt-2 text-sm text-ink-muted">
-                That&rsquo;s the kind of work I want. Drop a line — I reply within a day.
-              </p>
+              <p className="mt-2 text-sm text-ink-muted">{t.ctaBody}</p>
               <a
                 href={`mailto:${profile.email}`}
                 className="focus-ring mt-4 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-accent-cyan hover:underline"
@@ -115,7 +115,7 @@ export default function Contact() {
                   htmlFor="name"
                   className="mb-2 block font-mono text-xs uppercase tracking-wider text-ink-muted"
                 >
-                  Name
+                  {t.name}
                 </label>
                 <input
                   id="name"
@@ -124,7 +124,7 @@ export default function Contact() {
                   autoComplete="name"
                   value={form.name}
                   onChange={handleChange}
-                  placeholder="Your name"
+                  placeholder={t.namePlaceholder}
                   className="focus-ring w-full rounded-lg border border-border bg-void/60 px-4 py-2.5 text-sm text-ink-primary placeholder:text-ink-faint"
                 />
               </div>
@@ -133,7 +133,7 @@ export default function Contact() {
                   htmlFor="email"
                   className="mb-2 block font-mono text-xs uppercase tracking-wider text-ink-muted"
                 >
-                  Email
+                  {t.email}
                 </label>
                 <input
                   id="email"
@@ -143,7 +143,7 @@ export default function Contact() {
                   autoComplete="email"
                   value={form.email}
                   onChange={handleChange}
-                  placeholder="you@example.com"
+                  placeholder={t.emailPlaceholder}
                   className="focus-ring w-full rounded-lg border border-border bg-void/60 px-4 py-2.5 text-sm text-ink-primary placeholder:text-ink-faint"
                 />
               </div>
@@ -153,7 +153,7 @@ export default function Contact() {
                 htmlFor="message"
                 className="mb-2 block font-mono text-xs uppercase tracking-wider text-ink-muted"
               >
-                Message
+                {t.message}
               </label>
               <textarea
                 id="message"
@@ -162,7 +162,7 @@ export default function Contact() {
                 rows={6}
                 value={form.message}
                 onChange={handleChange}
-                placeholder="What are you building, and where do you need help?"
+                placeholder={t.messagePlaceholder}
                 className="focus-ring w-full resize-none rounded-lg border border-border bg-void/60 px-4 py-2.5 text-sm text-ink-primary placeholder:text-ink-faint"
               />
             </div>
@@ -172,18 +172,16 @@ export default function Contact() {
             >
               {sent ? (
                 <>
-                  <CheckCircle2 className="h-4 w-4" /> Message ready
+                  <CheckCircle2 className="h-4 w-4" /> {t.ready}
                 </>
               ) : (
                 <>
-                  <Send className="h-4 w-4" /> Send Message
+                  <Send className="h-4 w-4" /> {t.send}
                 </>
               )}
             </button>
             <p role="status" className="font-mono text-[11px] text-ink-faint">
-              {sent
-                ? `Opening your mail app — if nothing happens, write to ${profile.email}.`
-                : `Opens your default mail app · ${profile.email}`}
+              {sent ? t.statusSent(profile.email) : t.statusIdle(profile.email)}
             </p>
           </motion.form>
         </div>

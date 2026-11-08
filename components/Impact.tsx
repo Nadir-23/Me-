@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useInView, animate } from "framer-motion";
 import { Rocket, Lightbulb, Ship, Repeat } from "lucide-react";
 import SectionHeading from "./SectionHeading";
-import { stats, workflow } from "@/lib/data";
+import { useI18n } from "@/lib/i18n";
 
 const workflowIcons = [Lightbulb, Rocket, Ship, Repeat];
 
@@ -47,13 +47,14 @@ function Counter({ value, suffix, label }: { value: number; suffix: string; labe
 }
 
 export default function Impact() {
+  const { stats, workflow, ui } = useI18n();
   return (
     <section id="impact" className="relative border-t border-border/60 bg-surface py-24 sm:py-28">
       <div className="mx-auto max-w-6xl px-5 sm:px-6">
         <SectionHeading
-          eyebrow="05 · Impact"
-          title="Productivity, measured"
-          description="Innovation only counts when it ships. Here's the tally — and the loop I run to keep it moving."
+          eyebrow={ui.impact.eyebrow}
+          title={ui.impact.title}
+          description={ui.impact.description}
         />
 
         {/* Animated stats strip */}
@@ -72,7 +73,7 @@ export default function Impact() {
         {/* How I work */}
         <div className="mt-14">
           <h3 className="font-mono text-xs uppercase tracking-[0.25em] text-accent-cyan">
-            How I work
+            {ui.impact.howIWork}
           </h3>
           <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {workflow.map((step, i) => {

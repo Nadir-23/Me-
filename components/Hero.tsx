@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { ArrowDown, Download, Github, Linkedin, Mail, MapPin } from "lucide-react";
 import NeuralField from "./NeuralField";
-import { profile } from "@/lib/data";
+import { useI18n } from "@/lib/i18n";
 
 /**
  * Hero entrance runs in CSS (.hero-in) rather than JS: the SSR HTML is
@@ -61,6 +61,7 @@ function RotatingWords({ words }: { words: string[] }) {
 }
 
 export default function Hero() {
+  const { profile, ui } = useI18n();
   return (
     <section
       id="top"
@@ -121,7 +122,7 @@ export default function Hero() {
             href="#projects"
             className="focus-ring group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-cta-from to-cta-to px-6 py-3 font-mono text-xs uppercase tracking-wider text-white shadow-glow transition-transform hover:scale-[1.03]"
           >
-            View Projects
+            {ui.hero.viewProjects}
             <ArrowDown className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />
           </a>
           <a
@@ -130,7 +131,7 @@ export default function Hero() {
             className="focus-ring inline-flex items-center gap-2 rounded-full border border-border bg-panel/60 px-6 py-3 font-mono text-xs uppercase tracking-wider text-ink-primary backdrop-blur transition-colors hover:border-accent-cyan/60 hover:text-accent-cyan"
           >
             <Download className="h-4 w-4" />
-            Download CV
+            {ui.hero.downloadCv}
           </a>
         </div>
 

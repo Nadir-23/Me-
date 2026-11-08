@@ -3,6 +3,8 @@ import localFont from "next/font/local";
 import { MotionConfig } from "framer-motion";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { I18nProvider } from "@/lib/i18n";
+import SkipLink from "@/components/SkipLink";
 import ScrollToTop from "@/components/ScrollToTop";
 import CursorGlow from "@/components/CursorGlow";
 import { profile } from "@/lib/data";
@@ -141,18 +143,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
     >
       <body>
-        <a href="#main-content" className="skip-link">
-          Skip to content
-        </a>
         <noscript>
           <style>{`[style*="opacity"]{opacity:1!important;transform:none!important}`}</style>
         </noscript>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-          <MotionConfig reducedMotion="user">
-            <CursorGlow />
-            {children}
-            <ScrollToTop />
-          </MotionConfig>
+          <I18nProvider>
+            <SkipLink />
+            <MotionConfig reducedMotion="user">
+              <CursorGlow />
+              {children}
+              <ScrollToTop />
+            </MotionConfig>
+          </I18nProvider>
         </ThemeProvider>
         <script
           type="application/ld+json"

@@ -3,13 +3,14 @@
 import { motion } from "framer-motion";
 import { Award, BookOpen, Globe, MapPin } from "lucide-react";
 import SectionHeading from "./SectionHeading";
-import { about } from "@/lib/data";
+import { useI18n } from "@/lib/i18n";
 
 type Fact = { label: string; value: string; detail?: string };
 
 const factIcons = [MapPin, BookOpen, Globe, Award];
 
 export default function About() {
+  const { about, ui } = useI18n();
   const facts: Fact[] = [
     about.facts.location,
     about.facts.education,
@@ -21,9 +22,9 @@ export default function About() {
     <section id="about" className="relative border-t border-border/60 bg-surface py-24 sm:py-28">
       <div className="mx-auto max-w-6xl px-5 sm:px-6">
         <SectionHeading
-          eyebrow="01 · About"
-          title="Two ideas, one workflow: innovation and productivity"
-          description="I like work that is both new and finished — a model nobody has trained for Darija, shipped as something people can actually use."
+          eyebrow={ui.about.eyebrow}
+          title={ui.about.title}
+          description={ui.about.description}
         />
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
