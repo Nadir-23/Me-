@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { MotionConfig } from "framer-motion";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -7,24 +7,31 @@ import ScrollToTop from "@/components/ScrollToTop";
 import CursorGlow from "@/components/CursorGlow";
 import { profile } from "@/lib/data";
 
-const display = Space_Grotesk({
-  subsets: ["latin"],
+/* Self-hosted variable fonts (public/fonts) — no build-time fetch from
+   Google, so builds never fail on a fonts.googleapis.com hiccup. */
+const display = localFont({
+  src: [
+    {
+      path: "../public/fonts/space-grotesk-latin-var.woff2",
+      weight: "300 700",
+      style: "normal",
+    },
+  ],
   variable: "--font-display",
-  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
-const body = Inter({
-  subsets: ["latin"],
+const body = localFont({
+  src: [{ path: "../public/fonts/inter-latin-var.woff2", weight: "300 700", style: "normal" }],
   variable: "--font-body",
-  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
-const mono = JetBrains_Mono({
-  subsets: ["latin"],
+const mono = localFont({
+  src: [
+    { path: "../public/fonts/jetbrains-mono-latin-var.woff2", weight: "400 600", style: "normal" },
+  ],
   variable: "--font-mono",
-  weight: ["400", "500", "600"],
   display: "swap",
 });
 
