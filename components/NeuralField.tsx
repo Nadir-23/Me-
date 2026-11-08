@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useTheme } from "next-themes";
 
 type Node = {
   x: number;
@@ -11,14 +12,17 @@ type Node = {
 };
 
 /**
- * NeuralField — the page's signature element.
- * A field of connected nodes that behaves like a lightweight neural network:
- * nodes "fire" (pulse) periodically and edges brighten based on proximity,
- * echoing the AI / data-science subject matter rather than generic particles.
+ * NeuralField — the hero's signature background.
+ * A field of connected nodes that behaves like a lightweight neural network.
+ * - node / edge colours come from CSS tokens, so it re-tints in light mode
+ * - the animation loop pauses off-screen and when the tab is hidden
+ * - reduced-motion gets a single static frame
  */
 export default function NeuralField({ density = 0.00009 }: { density?: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouse = useRef({ x: -9999, y: -9999 });
+  const { resolvedTheme } = useTheme();
+  const mode = resolvedTheme ?? "dark";
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -26,23 +30,33 @@ export default function NeuralField({ density = 0.00009 }: { density?: number })
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const prefersReduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
+    const rootStyle = getComputedStyle(document.documentElement);
+    const token = (name: string, fallback: string) =>
+      rootStyle.getPropertyValue(name).trim() || fallback;
+    // tokens are space-separated rgb triplets; canvas needs comma syntax
+    const rgba = (triplet: string, alpha: number | string) =>
+      `rgba(${triplet.trim().replace(/\s+/g, ",")}, ${alpha})`;
+    const nodeRgb = token("--node-rgb", "238 240 251");
+    const nodeAlpha = token("--node-alpha", "0.75");
+    const edgeA = token("--edge-a", "124 92 255");
+    const edgeB = token("--edge-b", "53 224 208");
+
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
     let width = 0;
     let height = 0;
     let nodes: Node[] = [];
     let raf = 0;
-
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let inView = true;
+    let edgeGradient: CanvasGradient | null = null;
 
     function resize() {
       const parent = canvas!.parentElement;
       width = parent ? parent.clientWidth : window.innerWidth;
       height = parent ? parent.clientHeight : window.innerHeight;
-      canvas!.width = width * dpr;
-      canvas!.height = height * dpr;
+      canvas!.width = Math.max(1, Math.floor(width * dpr));
+      canvas!.height = Math.max(1, Math.floor(height * dpr));
       canvas!.style.width = width + "px";
       canvas!.style.height = height + "px";
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -55,6 +69,11 @@ export default function NeuralField({ density = 0.00009 }: { density?: number })
         vy: (Math.random() - 0.5) * 0.25,
         r: Math.random() * 1.6 + 0.6,
       }));
+
+      // one shared gradient for every edge — far cheaper than one per line
+      edgeGradient = ctx!.createLinearGradient(0, 0, width, height);
+      edgeGradient.addColorStop(0, rgba(edgeA, 1));
+      edgeGradient.addColorStop(1, rgba(edgeB, 1));
     }
 
     function step() {
@@ -68,47 +87,57 @@ export default function NeuralField({ density = 0.00009 }: { density?: number })
 
         const dx = n.x - mouse.current.x;
         const dy = n.y - mouse.current.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 120) {
+        const distSq = dx * dx + dy * dy;
+        if (distSq < 14400) {
+          const dist = Math.sqrt(distSq) || 1;
           const force = (120 - dist) / 120;
-          n.x += (dx / (dist || 1)) * force * 0.6;
-          n.y += (dy / (dist || 1)) * force * 0.6;
+          n.x += (dx / dist) * force * 0.6;
+          n.y += (dy / dist) * force * 0.6;
         }
       }
 
       const linkDist = 140;
+      const linkDistSq = linkDist * linkDist;
+      ctx!.strokeStyle = edgeGradient ?? rgba(edgeA, 1);
+      ctx!.lineWidth = 0.6;
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
           const a = nodes[i];
           const b = nodes[j];
           const dx = a.x - b.x;
           const dy = a.y - b.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < linkDist) {
-            const alpha = (1 - dist / linkDist) * 0.35;
-            const grad = ctx!.createLinearGradient(a.x, a.y, b.x, b.y);
-            grad.addColorStop(0, `rgba(124,92,255,${alpha})`);
-            grad.addColorStop(1, `rgba(53,224,208,${alpha})`);
-            ctx!.strokeStyle = grad;
-            ctx!.lineWidth = 0.6;
-            ctx!.beginPath();
-            ctx!.moveTo(a.x, a.y);
-            ctx!.lineTo(b.x, b.y);
-            ctx!.stroke();
-          }
+          const distSq = dx * dx + dy * dy;
+          if (distSq >= linkDistSq) continue;
+          ctx!.globalAlpha = (1 - Math.sqrt(distSq) / linkDist) * 0.4;
+          ctx!.beginPath();
+          ctx!.moveTo(a.x, a.y);
+          ctx!.lineTo(b.x, b.y);
+          ctx!.stroke();
         }
       }
+      ctx!.globalAlpha = 1;
 
+      ctx!.fillStyle = rgba(nodeRgb, nodeAlpha);
       for (const n of nodes) {
         ctx!.beginPath();
         ctx!.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-        ctx!.fillStyle = "rgba(238,240,251,0.75)";
         ctx!.fill();
       }
+    }
 
-      if (!prefersReduced) {
-        raf = requestAnimationFrame(step);
+    function loop() {
+      raf = 0;
+      if (!inView || document.hidden) return;
+      step();
+      raf = requestAnimationFrame(loop);
+    }
+
+    function kick() {
+      if (prefersReduced) {
+        step();
+        return;
       }
+      if (!raf && inView && !document.hidden) raf = requestAnimationFrame(loop);
     }
 
     function handleMove(e: MouseEvent) {
@@ -121,30 +150,42 @@ export default function NeuralField({ density = 0.00009 }: { density?: number })
       mouse.current.y = -9999;
     }
 
+    const io = new IntersectionObserver(
+      (entries) => {
+        inView = entries[0]?.isIntersecting ?? true;
+        if (inView) kick();
+        else if (raf) {
+          cancelAnimationFrame(raf);
+          raf = 0;
+        }
+      },
+      { threshold: 0 }
+    );
+
+    const onVisibility = () => kick();
+
     resize();
     step();
+    kick();
+    io.observe(canvas);
     window.addEventListener("resize", resize);
-    canvas.addEventListener("mousemove", handleMove);
-    canvas.addEventListener("mouseleave", handleLeave);
-
-    if (prefersReduced) {
-      // draw a single static frame
-      step();
+    document.addEventListener("visibilitychange", onVisibility);
+    if (!prefersReduced) {
+      canvas.addEventListener("mousemove", handleMove);
+      canvas.addEventListener("mouseleave", handleLeave);
     }
 
     return () => {
-      cancelAnimationFrame(raf);
+      if (raf) cancelAnimationFrame(raf);
+      io.disconnect();
       window.removeEventListener("resize", resize);
+      document.removeEventListener("visibilitychange", onVisibility);
       canvas.removeEventListener("mousemove", handleMove);
       canvas.removeEventListener("mouseleave", handleLeave);
     };
-  }, [density]);
+  }, [density, mode]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 h-full w-full"
-      aria-hidden="true"
-    />
+    <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" aria-hidden="true" />
   );
 }

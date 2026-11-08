@@ -1,33 +1,34 @@
 import type { Config } from "tailwindcss";
 
+/**
+ * Every color is driven by a CSS custom property (see app/globals.css).
+ * Switching `html.light` swaps the whole palette — no !important hacks,
+ * and alpha variants (`bg-panel/50`) keep working in both themes.
+ */
 const config: Config = {
   darkMode: "class",
-  content: [
-    "./app/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./lib/**/*.{ts,tsx}",
-  ],
+  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./lib/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        void: "#06060c",
-        surface: "#0c0c18",
-        "surface-2": "#12122238",
-        panel: "#12101f",
-        border: "#232238",
-        indigo: {
-          deep: "#1e1b4b",
-        },
+        void: "rgb(var(--bg-void) / <alpha-value>)",
+        surface: "rgb(var(--bg-surface) / <alpha-value>)",
+        panel: "rgb(var(--bg-panel) / <alpha-value>)",
+        border: "rgb(var(--bg-line) / <alpha-value>)",
         accent: {
-          violet: "#7c5cff",
-          blue: "#4a7dff",
-          cyan: "#35e0d0",
-          amber: "#f0b74a",
+          violet: "rgb(var(--accent-violet) / <alpha-value>)",
+          blue: "rgb(var(--accent-blue) / <alpha-value>)",
+          cyan: "rgb(var(--accent-cyan) / <alpha-value>)",
+          amber: "rgb(var(--accent-amber) / <alpha-value>)",
+        },
+        cta: {
+          from: "rgb(var(--cta-from) / <alpha-value>)",
+          to: "rgb(var(--cta-to) / <alpha-value>)",
         },
         ink: {
-          primary: "#eef0fb",
-          muted: "#9295b8",
-          faint: "#5c5f80",
+          primary: "rgb(var(--ink-1) / <alpha-value>)",
+          muted: "rgb(var(--ink-2) / <alpha-value>)",
+          faint: "rgb(var(--ink-3) / <alpha-value>)",
         },
       },
       fontFamily: {
@@ -37,32 +38,29 @@ const config: Config = {
       },
       backgroundImage: {
         "grid-lines":
-          "linear-gradient(to right, rgba(124,92,255,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(124,92,255,0.06) 1px, transparent 1px)",
+          "linear-gradient(to right, rgb(var(--grid-line) / 0.07) 1px, transparent 1px), linear-gradient(to bottom, rgb(var(--grid-line) / 0.07) 1px, transparent 1px)",
         "radial-fade":
-          "radial-gradient(circle at 50% 0%, rgba(124,92,255,0.16), transparent 60%)",
+          "radial-gradient(circle at 50% 0%, rgb(var(--glow-a) / 0.16), transparent 60%)",
       },
       backgroundSize: {
         grid: "48px 48px",
       },
       animation: {
-        "spin-slow": "spin 14s linear infinite",
         float: "float 6s ease-in-out infinite",
-        "pulse-slow": "pulse 4s ease-in-out infinite",
-        marquee: "marquee 28s linear infinite",
+        "gradient-x": "gradient-x 9s ease infinite",
       },
       keyframes: {
         float: {
           "0%, 100%": { transform: "translateY(0px)" },
           "50%": { transform: "translateY(-14px)" },
         },
-        marquee: {
-          "0%": { transform: "translateX(0%)" },
-          "100%": { transform: "translateX(-50%)" },
+        "gradient-x": {
+          "0%, 100%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
         },
       },
       boxShadow: {
         glow: "0 0 40px rgba(124, 92, 255, 0.25)",
-        "glow-cyan": "0 0 40px rgba(53, 224, 208, 0.2)",
       },
     },
   },

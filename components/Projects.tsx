@@ -56,15 +56,15 @@ export default function Projects() {
 
         {/* Filters */}
         <div
-          role="tablist"
-          aria-label="Filter projects"
+          role="group"
+          aria-label="Filter projects by category"
           className="mb-10 flex flex-wrap gap-2"
         >
           {projectCategories.map((cat: Category) => (
             <button
               key={cat}
-              role="tab"
-              aria-selected={active === cat}
+              type="button"
+              aria-pressed={active === cat}
               onClick={() => setActive(cat)}
               className={`focus-ring rounded-full border px-4 py-1.5 font-mono text-xs uppercase tracking-wider transition-colors ${
                 active === cat
@@ -76,6 +76,11 @@ export default function Projects() {
             </button>
           ))}
         </div>
+
+        <p role="status" className="sr-only">
+          {filtered.length} {filtered.length === 1 ? "project" : "projects"} shown in{" "}
+          {active === "All" ? "all categories" : active}
+        </p>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <AnimatePresence mode="popLayout">

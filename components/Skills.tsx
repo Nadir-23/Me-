@@ -11,7 +11,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import SectionHeading from "./SectionHeading";
-import { skillGroups } from "@/lib/data";
+import { certifications, skillGroups } from "@/lib/data";
 
 const iconMap: Record<string, LucideIcon> = {
   brain: Brain,
@@ -83,11 +83,7 @@ export default function Skills() {
               </h3>
             </div>
             <ul className="mt-5 space-y-3">
-              {[
-                { issuer: "DeepLearning.AI", name: "Machine Learning Specialization" },
-                { issuer: "DeepLearning.AI", name: "Generative AI with LLMs" },
-                { issuer: "Cisco", name: "Networking Essentials" },
-              ].map((c) => (
+              {certifications.map((c) => (
                 <li
                   key={c.name}
                   className="rounded-lg border border-border/70 bg-void/40 px-3.5 py-3"

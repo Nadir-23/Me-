@@ -10,16 +10,18 @@ import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
-    <main className="relative">
+    <>
       <Navbar />
-      <Hero />
-      <About />
-      <Projects />
-      <Skills />
-      <Journey />
-      <Impact />
-      <Contact />
+      <main id="main-content" tabIndex={-1}>
+        <Hero />
+        <About />
+        <Projects />
+        <Skills />
+        <Journey />
+        <Impact />
+        <Contact />
+      </main>
       <Footer />
-    </main>
+    </>
   );
 }

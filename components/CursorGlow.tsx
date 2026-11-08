@@ -1,22 +1,26 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useTheme } from "next-themes";
 
 /**
  * CursorGlow — a soft accent glow that trails the pointer.
- * Pointer-fine devices only; a single static frame under reduced-motion.
+ * Fine pointers only; a single static position under reduced-motion.
+ * Blend mode and intensity follow the active theme.
  */
 export default function CursorGlow() {
   const ref = useRef<HTMLDivElement>(null);
+  const { resolvedTheme } = useTheme();
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-
-    const finePointer = window.matchMedia("(pointer: fine)").matches;
-    if (!finePointer) return;
+    if (!window.matchMedia("(pointer: fine)").matches) return;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const light = resolvedTheme === "light";
+
+    el.style.mixBlendMode = light ? "normal" : "screen";
 
     let x = window.innerWidth / 2;
     let y = window.innerHeight / 2;
@@ -58,7 +62,7 @@ export default function CursorGlow() {
       window.removeEventListener("mousemove", onMove);
       document.documentElement.removeEventListener("mouseleave", onLeave);
     };
-  }, []);
+  }, [resolvedTheme]);
 
   return (
     <div
@@ -67,8 +71,7 @@ export default function CursorGlow() {
       className="pointer-events-none fixed left-0 top-0 z-[100] h-[400px] w-[400px] rounded-full opacity-0 transition-opacity duration-500"
       style={{
         background:
-          "radial-gradient(circle, rgba(124,92,255,0.14) 0%, rgba(53,224,208,0.06) 35%, transparent 65%)",
-        mixBlendMode: "screen",
+          "radial-gradient(circle, rgb(var(--glow-a) / 0.13) 0%, rgb(var(--accent-cyan) / 0.055) 35%, transparent 65%)",
       }}
     />
   );

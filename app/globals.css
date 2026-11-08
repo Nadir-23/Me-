@@ -2,8 +2,71 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ---------------------------------------------------------------------------
+   PALETTE TOKENS
+   All Tailwind colors read these (see tailwind.config.ts). Swapping the
+   values on `html.light` re-themes the whole site, alpha variants included.
+   Accent values are chosen so every text/background pair clears WCAG AA.
+--------------------------------------------------------------------------- */
 :root {
   color-scheme: dark;
+
+  --bg-void: 6 6 12;
+  --bg-surface: 12 12 24;
+  --bg-panel: 18 16 31;
+  --bg-line: 35 34 56;
+
+  --ink-1: 238 240 251;
+  --ink-2: 146 149 184;
+  --ink-3: 122 125 166; /* 4.9:1 on --bg-surface */
+
+  --accent-violet: 124 92 255;
+  --accent-blue: 74 125 255;
+  --accent-cyan: 53 224 208;
+  --accent-amber: 240 183 74;
+
+  /* Solid CTA fills — white labels stay >= 4.5:1 on both stops */
+  --cta-from: 106 75 255;
+  --cta-to: 69 96 245;
+
+  /* Gradient text stops (violet lifted so 18px wordmarks clear 4.5:1) */
+  --grad-a: 132 104 255;
+
+  /* Canvas paints (Tailwind can't consume these) */
+  --node-rgb: 238 240 251;
+  --node-alpha: 0.75;
+  --edge-a: 124 92 255;
+  --edge-b: 53 224 208;
+  --grid-line: 124 92 255;
+  --glow-a: 124 92 255;
+}
+
+html.light {
+  color-scheme: light;
+
+  --bg-void: 247 247 251;
+  --bg-surface: 255 255 255;
+  --bg-panel: 255 255 255;
+  --bg-line: 226 226 238;
+
+  --ink-1: 20 18 42;
+  --ink-2: 74 74 106;
+  --ink-3: 92 92 122; /* 6.1:1 on white */
+
+  --accent-violet: 80 50 230;
+  --accent-blue: 45 90 235;
+  --accent-cyan: 11 114 108;
+  --accent-amber: 154 103 0;
+
+  --cta-from: 76 47 224;
+  --cta-to: 45 90 235;
+  --grad-a: 80 50 230;
+
+  --node-rgb: 35 33 70;
+  --node-alpha: 0.55;
+  --edge-a: 80 50 230;
+  --edge-b: 11 114 108;
+  --glow-a: 80 50 230;
 }
 
 html {
@@ -11,88 +74,18 @@ html {
   scroll-padding-top: 5rem;
 }
 
-html.light {
-  color-scheme: light;
-}
-
 body {
   @apply bg-void text-ink-primary font-body antialiased;
   font-feature-settings: "ss01" on, "ss02" on;
 }
 
-html.light body {
-  @apply bg-[#f7f7fb] text-[#14122a];
-}
-
-/* Light-mode token overrides (WCAG AA on light surfaces) */
-html.light {
-  --color-surface: #ffffff;
-  --color-panel: #ffffff;
-  --color-border: #e4e4f0;
-  --color-ink-primary: #14122a;
-  --color-ink-muted: #4a4a6a;
-  --color-ink-faint: #6b6b8a;
-}
-
-html.light .bg-void {
-  background-color: #f7f7fb !important;
-}
-html.light .bg-surface {
-  background-color: #ffffff !important;
-}
-html.light .bg-panel\/50,
-html.light .bg-panel\/60,
-html.light .bg-panel\/80,
-html.light .bg-panel\/40 {
-  background-color: rgba(255, 255, 255, 0.85) !important;
-}
-html.light .border-border,
-html.light .border-border\/60,
-html.light .border-border\/70 {
-  border-color: #e4e4f0 !important;
-}
-html.light .text-ink-muted {
-  color: #4a4a6a !important;
-}
-html.light .text-ink-faint {
-  color: #6b6b8a !important;
-}
-html.light .text-ink-primary {
-  color: #14122a !important;
-}
-html.light .bg-void\/40,
-html.light .bg-void\/60 {
-  background-color: rgba(247, 247, 251, 0.9) !important;
-}
-html.light .bg-void\/80,
-html.light .bg-void\/95,
-html.light header.bg-void\/80,
-html.light nav + ul {
-  background-color: rgba(247, 247, 251, 0.88) !important;
-}
-html.light .text-white {
-  color: #ffffff !important;
-}
-html.light .shadow-glow {
-  box-shadow: 0 0 32px rgba(124, 92, 255, 0.28);
-}
-html.light ::selection {
-  background: rgba(124, 92, 255, 0.25);
-  color: #14122a;
-}
-html.light .timeline-line {
-  background: linear-gradient(
-    180deg,
-    rgba(124, 92, 255, 0.08),
-    rgba(124, 92, 255, 0.45) 15%,
-    rgba(53, 224, 208, 0.45) 85%,
-    rgba(53, 224, 208, 0.08)
-  );
-}
-
 ::selection {
   background: rgba(124, 92, 255, 0.35);
   color: #fff;
+}
+html.light ::selection {
+  background: rgba(80, 50, 230, 0.22);
+  color: #14122a;
 }
 
 /* Scrollbar */
@@ -107,8 +100,30 @@ html.light .timeline-line {
   border-radius: 8px;
 }
 
+/* Hero entrance — CSS-only and transform-only on purpose:
+   an opacity animation makes the browser hold back the Largest Contentful
+   Paint until it settles (measured: LCP 3.1s -> LCP = FCP). */
+@keyframes hero-in {
+  from {
+    transform: translateY(18px);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.hero-in {
+  animation: hero-in 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
+  .hero-in {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
   *,
   *::before,
   *::after {
@@ -119,16 +134,44 @@ html.light .timeline-line {
   }
 }
 
+/* ---------------------------------------------------------------------------
+   COMPONENTS / UTILITIES
+--------------------------------------------------------------------------- */
+
+.skip-link {
+  @apply sr-only;
+}
+main:focus {
+  outline: none;
+}
+.skip-link:focus-visible {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  display: block;
+  width: auto;
+  height: auto;
+  padding: 0.7rem 1.1rem;
+  clip: auto;
+  clip-path: none;
+  white-space: nowrap;
+  border-radius: 9999px;
+  background: rgb(var(--bg-panel) / 1);
+  color: rgb(var(--ink-1) / 1);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  box-shadow: 0 0 0 1px rgb(var(--accent-cyan) / 0.6), 0 8px 30px rgb(0 0 0 / 0.45);
+}
+
 .section-eyebrow {
-  @apply font-mono text-xs tracking-[0.25em] uppercase text-accent-cyan/80;
+  @apply font-mono text-xs uppercase tracking-[0.25em] text-accent-cyan;
 }
 
 .section-heading {
-  @apply font-display text-3xl font-semibold text-ink-primary tracking-tight sm:text-4xl;
-}
-
-.glass-card {
-  @apply bg-panel/60 border border-border backdrop-blur-xl;
+  @apply font-display text-3xl font-semibold tracking-tight text-ink-primary sm:text-4xl;
 }
 
 .gradient-border {
@@ -144,9 +187,9 @@ html.light .timeline-line {
   padding: 1px;
   background: linear-gradient(
     135deg,
-    rgba(124, 92, 255, 0.55),
-    rgba(53, 224, 208, 0.25) 45%,
-    rgba(124, 92, 255, 0.05) 100%
+    rgba(var(--accent-violet) / 0.55),
+    rgba(var(--accent-cyan) / 0.25) 45%,
+    rgba(var(--accent-violet) / 0.05) 100%
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
@@ -154,17 +197,29 @@ html.light .timeline-line {
   pointer-events: none;
 }
 
-html.light .gradient-border::before {
-  background: linear-gradient(
-    135deg,
-    rgba(124, 92, 255, 0.4),
-    rgba(53, 224, 208, 0.3) 50%,
-    rgba(74, 125, 255, 0.15) 100%
+.text-gradient {
+  background-image: linear-gradient(
+    120deg,
+    rgb(var(--grad-a)) 0%,
+    rgb(var(--accent-blue)) 45%,
+    rgb(var(--accent-cyan)) 100%
   );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-.text-gradient {
-  background: linear-gradient(120deg, #7c5cff 0%, #4a7dff 45%, #35e0d0 100%);
+/* Same gradient, slowly travelling — the hero's "live" wordmark */
+.text-gradient-live {
+  background-image: linear-gradient(
+    110deg,
+    rgb(var(--grad-a)) 0%,
+    rgb(var(--accent-blue)) 35%,
+    rgb(var(--accent-cyan)) 65%,
+    rgb(var(--grad-a)) 100%
+  );
+  background-size: 300% 100%;
+  animation: gradient-x 9s ease infinite;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -174,17 +229,12 @@ html.light .gradient-border::before {
   @apply outline-none focus-visible:ring-2 focus-visible:ring-accent-cyan/70 focus-visible:ring-offset-2 focus-visible:ring-offset-void;
 }
 
-html.light .focus-ring {
-  @apply focus-visible:ring-offset-[#f7f7fb];
-}
-
-/* Timeline connector */
 .timeline-line {
   background: linear-gradient(
     180deg,
-    rgba(124, 92, 255, 0.05),
-    rgba(124, 92, 255, 0.5) 15%,
-    rgba(53, 224, 208, 0.5) 85%,
-    rgba(53, 224, 208, 0.05)
+    rgba(var(--accent-violet) / 0.05),
+    rgba(var(--accent-violet) / 0.5) 15%,
+    rgba(var(--accent-cyan) / 0.5) 85%,
+    rgba(var(--accent-cyan) / 0.05)
   );
 }

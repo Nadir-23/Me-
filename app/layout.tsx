@@ -1,5 +1,6 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
+import { MotionConfig } from "framer-motion";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -29,8 +30,18 @@ const mono = JetBrains_Mono({
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://nadirboukrioui.dev";
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#06060c" },
+    { media: "(prefers-color-scheme: light)", color: "#f7f7fb" },
+  ],
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
+  icons: { icon: "/icon.svg", apple: "/icon.svg" },
   title: {
     default: "Nadir Boukrioui — AI Engineer · Full-Stack · Data Science",
     template: "%s · Nadir Boukrioui",
@@ -123,10 +134,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
     >
       <body>
+        <a href="#main-content" className="skip-link">
+          Skip to content
+        </a>
+        <noscript>
+          <style>{`[style*="opacity"]{opacity:1!important;transform:none!important}`}</style>
+        </noscript>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-          <CursorGlow />
-          {children}
-          <ScrollToTop />
+          <MotionConfig reducedMotion="user">
+            <CursorGlow />
+            {children}
+            <ScrollToTop />
+          </MotionConfig>
         </ThemeProvider>
         <script
           type="application/ld+json"

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Nadir Boukrioui">
+  <defs>
+    <linearGradient id="g" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7c5cff"/>
+      <stop offset="0.5" stop-color="#4a7dff"/>
+      <stop offset="1" stop-color="#35e0d0"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#06060c"/>
+  <rect x="0.5" y="0.5" width="63" height="63" rx="13.5" fill="none" stroke="#232238"/>
+  <path d="M19 46V18l26 28V18" fill="none" stroke="url(#g)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

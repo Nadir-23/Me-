@@ -58,7 +58,7 @@ export default function Contact() {
               const content = (
                 <div className="gradient-border flex items-center gap-4 rounded-xl bg-panel/50 p-5 transition-colors hover:bg-panel/80">
                   <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent-violet/20 to-accent-cyan/20">
-                    <Icon className="h-4.5 w-4.5 text-accent-cyan" aria-hidden="true" />
+                    <Icon className="h-5 w-5 text-accent-cyan" aria-hidden="true" />
                   </span>
                   <div>
                     <div className="font-mono text-[10px] uppercase tracking-widest text-ink-faint">
@@ -168,11 +168,11 @@ export default function Contact() {
             </div>
             <button
               type="submit"
-              className="focus-ring inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-accent-violet to-accent-blue px-6 py-3 font-mono text-xs uppercase tracking-wider text-white shadow-glow transition-transform hover:scale-[1.01] sm:w-auto"
+              className="focus-ring inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cta-from to-cta-to px-6 py-3 font-mono text-xs uppercase tracking-wider text-white shadow-glow transition-transform hover:scale-[1.01] sm:w-auto"
             >
               {sent ? (
                 <>
-                  <CheckCircle2 className="h-4 w-4" /> Opening mail client…
+                  <CheckCircle2 className="h-4 w-4" /> Message ready
                 </>
               ) : (
                 <>
@@ -180,8 +180,10 @@ export default function Contact() {
                 </>
               )}
             </button>
-            <p className="font-mono text-[11px] text-ink-faint">
-              Opens your default mail app · {profile.email}
+            <p role="status" className="font-mono text-[11px] text-ink-faint">
+              {sent
+                ? `Opening your mail app — if nothing happens, write to ${profile.email}.`
+                : `Opens your default mail app · ${profile.email}`}
             </p>
           </motion.form>
         </div>

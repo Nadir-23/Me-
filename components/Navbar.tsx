@@ -66,7 +66,7 @@ export default function Navbar() {
               <li key={link.href}>
                 <a
                   href={link.href}
-                  aria-current={isActive ? "true" : undefined}
+                  aria-current={isActive ? "location" : undefined}
                   className={`focus-ring relative font-mono text-xs uppercase tracking-wider transition-colors ${
                     isActive
                       ? "text-accent-cyan"
